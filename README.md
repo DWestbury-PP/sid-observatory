@@ -5,7 +5,13 @@ A browser SID listening room: demoscene phosphor meets a modern instrument panel
 Live demo: https://tender-coral-87w9.here.now/
 Source: https://github.com/DWestbury-PP/sid-observatory
 
-Second pressing, 0.2.0. Built with Darrell Westbury's C64/EVO64 brief in mind.
+Third pressing, 0.3.0. Built with Darrell Westbury's C64/EVO64 brief in mind.
+
+### Archive update (0.3.0)
+
+The record box now opens onto the High Voltage SID Collection (HVSC). A starter shelf of verified classics sits in the sidebar, and **Browse the whole archive** opens a dialog with the full folder tree and a search box over every composer and title. Choosing a tune fetches it from `hvsc.c64.org` straight into the browser (the download host sends `Access-Control-Allow-Origin: *`), parses it with the same strict PSID gate as a local file, and adds it to your tunes with its song length. Nothing is stored by the site or committed to this repository; the tunes remain the copyright of their composers and publishers, and HVSC distributes them for private enjoyment.
+
+The browsable index is generated, committed and pinned to one HVSC release by `scripts/build-hvsc-index.py`, which reads HVSC's own `Songlengths.md5`: a manifest, one JSON shard per second-level folder, a path list for search, and a starter shelf whose entries are verified against their PSID headers at build time. The transport shows elapsed time against the song length, and **Continue** plays on to the next tune in the collection when one ends (bundled studies loop, so they are treated as three minutes long). Each HVSC tune links out to DeepSID for a reference listen.
 
 ### Multi-SID update (0.2.0)
 
@@ -29,9 +35,11 @@ Requires Python 3 for the local static server and Node.js 20+ for tests. No npm 
 
 ```sh
 npm run serve
-# Open http://localhost:8080 and press Play.
+# Open http://127.0.0.1:8080 and press Play.
 npm test
 ```
+
+Use `127.0.0.1` rather than `localhost` for local development: hvsc.c64.org sends `Access-Control-Allow-Origin: *` to every origin except `http://localhost`, so archive fetches fail from a `localhost` page. The published https site is unaffected.
 
 Serve over HTTPS in production: AudioWorklet requires a secure context. Publish the contents of `dist/` to here.now or another static host. Opening index.html as a file will not work.
 
@@ -53,9 +61,10 @@ The script reads `HERE_NOW_API_KEY` from the environment or `.env` (never commit
 - Per-chip filter mode, cutoff register, resonance, routing and hex register view.
 - Compact and tabbed inspector layouts for multi-chip tunes; mute and solo across up to nine voices.
 - Phosphor visualization, oscilloscope mode, listening mode and reduced-motion support.
+- HVSC starter shelf, folder browser and search; tunes streamed on demand with song lengths, elapsed/length display, stop-at-end and auto-advance.
 - Responsive layout, keyboard controls (Space toggles playback), accessible control labels.
 
-Imported tunes remain in browser memory. No tune upload, persistent storage, analytics or backend. Google Fonts is the only external display resource and has local font fallbacks. DeepSID and emulator links are optional external navigation.
+Imported and streamed tunes remain in browser memory. No tune upload, persistent storage, analytics or backend. Google Fonts is the only external display resource and has local font fallbacks; archive tunes are fetched from hvsc.c64.org only when you choose them. Layout and auto-advance preferences are kept in `localStorage`. DeepSID, HVSC and emulator links are optional external navigation.
 
 ## Accuracy and compatibility boundaries
 
@@ -70,26 +79,32 @@ Envelope meters are internal emulator counters, not hardware-readable per-voice 
 - `dist/index.html`, `style.css`, `app.js`: interface and main-thread audio controller.
 - `dist/sid-format.js`: PSID validation and metadata parsing, including v3/v4 chip addresses and models.
 - `dist/collection.js`: deterministic track-removal state transitions.
+- `dist/archive.js`: HVSC URL, shard, search, length and auto-advance helpers.
+- `dist/hvsc/`: generated index (manifest, shards, path list, starter shelf) pinned to one HVSC release.
 - `dist/visualizations.js`: separate oscilloscope and phosphor renderers.
 - `dist/sid-worklet.js`: realtime render and instrument snapshot bridge.
 - `dist/vendor/jssid.js`: unchanged upstream emulator.
 - `dist/vendor/sid-core.js`: generated AudioWorklet-friendly, instrumented emulator core.
 - `scripts/adapt-engine.py`: reproducible patch, including explicit-load-address handling in the wrapper, bounded CPU execution, ENV3 index correction, multi-chip loading and per-chip model application.
 - `scripts/make-demo.py`: original 6502 music routine and PSID generator for the single-chip and 3SID studies.
+- `scripts/build-hvsc-index.py`: downloads HVSC's Songlengths database and emits the index under `dist/hvsc/`.
+- `scripts/publish-herenow.py`: publishes `dist/` to here.now.
 - `tests/player.test.js`: format validation, audio output, restart, mute/model and worklet-bridge tests.
 - `tests/multisid.test.js`: chip-address rules, nine-voice rendering, per-chip mute/model and the nine-trace worklet bridge.
+- `tests/archive.test.js`: index consistency, shard lookups, shelf verification, URL/search/length helpers and end detection.
 
 To regenerate the derived files:
 
 ```sh
 python3 scripts/adapt-engine.py
 python3 scripts/make-demo.py
+python3 scripts/build-hvsc-index.py   # network: refreshes dist/hvsc to the current HVSC release
 npm test
 ```
 
 ## Next iteration
 
-Establish a reference corpus of familiar tunes and compare playback against a reference emulator; evaluate reSID/WebSID fidelity and complete register-write capture. Add authorized archive access, song lengths and a proper collection experience after validating that foundation. A user-picked familiar SID is a better listening acceptance test than the bundled diagnostic composition.
+Compare playback of familiar HVSC tunes against DeepSID and a reference emulator; evaluate reSID/WebSID fidelity and complete register-write capture. Add named playlist collections (saved as HVSC paths in the browser), STIL commentary per tune, and RSID support once the engine can carry it.
 
 ## Credits
 
@@ -97,4 +112,4 @@ Emulator: **Mihaly Horvath (Hermit), 2016**, jsSID 0.9.1, mirrored at https://gi
 
 The visual interface, adapter, tests and included procedural composition were created for this project. A project-level license has not yet been chosen by the repository owner.
 
-References: https://vice-emu.sourceforge.io/vice_17.html (SID format); https://deepsid.chordian.net/ (reference player); https://here.now/docs (hosting).
+References: https://vice-emu.sourceforge.io/vice_17.html and HVSC `DOCUMENTS/SID_file_format.txt` (SID format); https://www.hvsc.c64.org/ (archive, Songlengths database, disclaimer); https://deepsid.chordian.net/ (reference player); https://here.now/docs (hosting).
