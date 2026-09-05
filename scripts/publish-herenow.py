@@ -5,8 +5,12 @@
 
 Reads HERE_NOW_API_KEY from the environment or from .env. Uses only the
 standard library. Flow: create/update -> PUT each presigned upload -> finalize.
+
+here.now serves files with a one-hour cache, so index.html's `?v=` cache-busters are
+stamped with the package version and the git commit at publish time. The source file
+is not modified.
 """
-import hashlib, json, mimetypes, os, sys, urllib.request
+import hashlib, json, mimetypes, os, re, subprocess, sys, urllib.request
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
@@ -34,14 +38,27 @@ def request(method, url, body=None, headers=None, raw=False):
     except urllib.error.HTTPError as error:
         sys.exit(f'{method} {url} failed: {error.code} {error.read().decode(errors="replace")[:600]}')
 
+def build_stamp():
+    version = json.loads((root / 'package.json').read_text()).get('version', '0')
+    try:
+        sha = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True, cwd=root, check=True).stdout.strip()
+        dirty = subprocess.run(['git', 'status', '--porcelain', 'dist'], capture_output=True, text=True, cwd=root).stdout.strip()
+        return f'{version}-{sha}' + ('-dirty' if dirty else '')
+    except Exception:
+        return version
+
 def main():
     slug = sys.argv[1] if len(sys.argv) > 1 else None
     key = api_key()
     auth = {'Authorization': f'Bearer {key}', 'Content-Type': 'application/json'}
     files, blobs = [], {}
+    stamp = build_stamp()
     for path in sorted(p for p in dist.rglob('*') if p.is_file() and not p.name.startswith('.')):
         rel = path.relative_to(dist).as_posix()
         data = path.read_bytes()
+        if rel == 'index.html':
+            data = re.sub(rb'\?v=[0-9A-Za-z.\-]+', b'?v=' + stamp.encode(), data)
+            print('cache-buster:', stamp)
         blobs[rel] = data
         files.append({'path': rel, 'size': len(data), 'hash': hashlib.sha256(data).hexdigest(), 'contentType': TYPES.get(path.suffix.lower()) or mimetypes.guess_type(path.name)[0] or 'application/octet-stream'})
     body = {'files': files, 'displayName': 'SID Observatory', 'displayDescription': 'A demoscene listening room and live SID voice inspector'}
