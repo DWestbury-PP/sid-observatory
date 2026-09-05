@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {parseSID,sidAddress} from '../dist/sid-format.js';
 import {SIDCore} from '../dist/vendor/sid-core.js';
-const load=name=>{const bytes=readFileSync(new URL('../dist/music/'+name,import.meta.url));return ()=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength);};
+const load=name=>{const bytes=readFileSync(new URL('./music/'+name,import.meta.url));return ()=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength);};
 const triple=load('phosphor-dreams-3sid.sid'),single=load('phosphor-dreams.sid');
 const energies=(core,seconds,rate=48000)=>{const e=new Float64Array(9);for(let i=0;i<rate*seconds;i++){const s=core.render();assert.ok(Number.isFinite(s));core.samples.forEach((x,v)=>e[v]+=x*x);}return Array.from(e);};
 

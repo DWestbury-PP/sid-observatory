@@ -4,7 +4,7 @@ import {trigger,drawOscilloscope,drawPhosphor,voiceColor} from './visualizations
 import {hvscUrl,deepsidUrl,shardFor,humanize,formatTime,searchPaths,nodeAt,hasEnded,nextTrack,describePath} from './archive.js';
 
 const $=id=>document.getElementById(id);
-const MAX_VOICES=9,BUNDLED_LENGTH=180;
+const MAX_VOICES=9;
 const zero=(count=1)=>({chips:count,registers:Array.from({length:count},()=>Array(25).fill(0)),envelopes:Array(count*3).fill(0),waves:Array.from({length:count*3},()=>new Float32Array(512)),time:0});
 let snapshot=zero(),tracks=[],current=-1,playing=false,loaded=false,busy=false,view='ribbons',ended=false;
 let chips=1,voices=3,activeChip=0,layout='compact',autoAdvance=true;
@@ -97,7 +97,7 @@ function renderTracks(){
     button.append(number,content);button.addEventListener('click',()=>selectTrack(i));row.append(button);
     if(!track.original){const remove=document.createElement('button');remove.className='remove-track';remove.textContent='×';remove.title='Remove '+track.meta.title;remove.setAttribute('aria-label','Remove '+track.meta.title+' from your tunes');remove.disabled=busy;remove.onclick=()=>removeTrack(i);row.append(remove);}
     return row;
-  }));$('track-count').textContent=String(tracks.length).padStart(2,'0');
+  }));if(!tracks.length){const empty=document.createElement('p');empty.className='track-empty';empty.textContent='Your tunes appear here.';$('track-list').append(empty);}$('track-count').textContent=String(tracks.length).padStart(2,'0');
 }
 async function removeTrack(index){
   if(busy)return;
@@ -106,17 +106,23 @@ async function removeTrack(index){
   if(result.activeRemoved){
     node?.port.postMessage({type:'playing',value:false});loaded=false;playingUI(false);history=[];current=-1;tracks=result.tracks;
     if(result.current>=0)await selectTrack(result.current);
-    else{
-      for(const id of ['track-title','transport-title'])$(id).textContent='No tune selected';
-      $('track-author').textContent='Open a SID file to begin';$('transport-author').textContent='';$('track-credit').textContent='YOUR RECORD BOX';$('format-badge').textContent='PSID';$('chip-badge').textContent='3 VOICES';$('track-source').hidden=true;
-      $('subtune').replaceChildren();$('start-hint').hidden=true;muted.fill(false);solo=-1;
-      chips=1;voices=3;activeChip=0;snapshot=zero();createInspector(null);sendMute();renderTracks();updateInspector();updateDuration();setBusy(false);
-    }
+    else showEmptyState();
   }else{tracks=result.tracks;current=result.current;renderTracks();}
   status('Removed '+title+' from this session.'+(tracks[index]?.source==='hvsc'?'':' Your original file is unchanged.'));
   // Keep keyboard focus in the collection after the pressed button disappears.
   const rows=$('track-list').children;const next=rows[Math.min(index,rows.length-1)];
   (next?.querySelector('.remove-track')||next?.querySelector('.track-item')||$('sid-file')).focus();
+}
+// Nothing on the turntable: point the listener at the shelf, the archive and their own files.
+function showEmptyState(){
+  $('track-credit').textContent='NOTHING ON THE TURNTABLE';$('track-title').textContent='Pick a tune.';
+  $('track-author').textContent='Choose a classic from the shelf, browse the whole archive, or open a SID file of your own.';
+  $('transport-title').textContent='No tune selected';$('transport-author').textContent='';
+  $('format-badge').textContent='PSID';$('chip-badge').textContent='3 VOICES';$('track-source').hidden=true;
+  $('subtune').replaceChildren();muted.fill(false);solo=-1;
+  chips=1;voices=3;activeChip=0;snapshot=zero();createInspector(null);sendMute();renderTracks();updateInspector();updateDuration();setBusy(false);
+  // The start button stays usable with nothing selected: it opens the archive.
+  $('start-hint').hidden=false;$('start-button').textContent='Browse the archive';$('start-button').onclick=openArchive;$('start-button').disabled=false;
 }
 async function selectTrack(index){
   if(busy||index===current)return;
@@ -131,7 +137,7 @@ async function selectTrack(index){
   $('chip-badge').textContent=chips>1?chips+' × SID · '+voices+' VOICES':'3 VOICES';
   $('subtune').replaceChildren(...Array.from({length:meta.songs},(_,i)=>{const option=document.createElement('option');option.value=i;option.textContent=String(i+1).padStart(2,'0')+' / '+String(meta.songs).padStart(2,'0');return option;}));
   $('subtune').value=meta.start;muted.fill(false);solo=-1;createInspector(meta);sendMute();renderTracks();updateInspector();updateDuration();playingUI(false);setBusy(false);
-  $('start-button').textContent='▶  Play this tune';
+  $('start-button').textContent='▶  Play this tune';$('start-button').onclick=togglePlay;
   const where=chips>1?chips+' × SID at '+meta.chips.map(chip=>hex(chip.address)).join(', '):'single SID';
   status((meta.assumedPAL?'This file does not specify a clock. PAL is assumed. ':'Ready to play · PAL / ')+where);
   if(resume)await togglePlay();
@@ -346,7 +352,7 @@ $('archive-button').onclick=openArchive;$('close-archive').onclick=()=>$('archiv
 $('advance').onclick=()=>{autoAdvance=!autoAdvance;$('advance').setAttribute('aria-pressed',String(autoAdvance));try{localStorage.setItem('sid-observatory-advance',autoAdvance?'on':'off');}catch{}status(autoAdvance?'Your tunes will play on in order when each one ends.':'Playback stops at the end of each tune.');};
 $('advance').setAttribute('aria-pressed',String(autoAdvance));
 
-$('play').onclick=togglePlay;$('start-button').onclick=togglePlay;$('restart').onclick=restart;$('subtune').onchange=restart;
+$('play').onclick=togglePlay;$('restart').onclick=restart;$('subtune').onchange=restart;
 $('volume').oninput=()=>{const value=Number($('volume').value);$('volume-value').textContent=value+'%';if(gain)gain.gain.setTargetAtTime(value/100,context.currentTime,.02);};
 $('sid-file').onchange=async event=>{await importFiles(event.target.files);event.target.value='';};
 for(const button of document.querySelectorAll('[data-view]'))button.onclick=()=>{view=button.dataset.view;for(const b of document.querySelectorAll('[data-view]')){b.classList.toggle('selected',b===button);b.setAttribute('aria-pressed',String(b===button));}$('register-panel').hidden=view!=='registers';$('main-canvas').hidden=view==='registers';$('visual-caption').textContent=view==='registers'?(chips>1?'PER-CHIP REGISTERS · HEXADECIMAL':'$D400–$D418 · HEXADECIMAL'):view==='ribbons'?'PHOSPHOR ORBITS · VOICE HISTORY':'OSCILLATOR OUTPUT · PRE-FILTER';$('main-canvas').setAttribute('aria-label',view==='ribbons'?'Audio-driven phosphor orbits with voice history':'Triggered pre-filter waveform traces');};
@@ -359,14 +365,7 @@ let dragDepth=0;document.addEventListener('dragenter',event=>{if(event.dataTrans
 document.addEventListener('dragover',event=>{if(event.dataTransfer?.types.includes('Files'))event.preventDefault();});
 document.addEventListener('dragleave',()=>{if(--dragDepth<=0){dragDepth=0;document.body.classList.remove('dragging');}});
 document.addEventListener('drop',event=>{event.preventDefault();dragDepth=0;document.body.classList.remove('dragging');if(event.dataTransfer?.files.length)importFiles(event.dataTransfer.files);});
-createInspector(null);updateInspector();requestAnimationFrame(frame);
-try{
-  for(const name of ['phosphor-dreams.sid','phosphor-dreams-3sid.sid']){
-    const response=await fetch('./music/'+name);if(!response.ok)throw new Error('The bundled tunes could not be loaded. You can still open your own SID file.');
-    const buffer=await response.arrayBuffer();tracks.push({buffer,meta:parseSID(buffer,name),original:true,source:'bundled',lengths:[BUNDLED_LENGTH]});
-  }
-  await selectTrack(0);
-}catch(error){status(error.message,true);}
+showEmptyState();requestAnimationFrame(frame);
 try{
   [archive.manifest,archive.shelf]=await Promise.all([loadJSON('./hvsc/manifest.json'),loadJSON('./hvsc/shelf.json')]);
   $('archive-count').textContent='HVSC #'+archive.manifest.release;renderShelf();

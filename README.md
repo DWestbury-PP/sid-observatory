@@ -11,13 +11,13 @@ Third pressing, 0.3.0. Built with Darrell Westbury's C64/EVO64 brief in mind.
 
 The record box now opens onto the High Voltage SID Collection (HVSC). A starter shelf of verified classics sits in the sidebar, and **Browse the whole archive** opens a dialog with the full folder tree and a search box over every composer and title. Choosing a tune fetches it from `hvsc.c64.org` straight into the browser (the download host sends `Access-Control-Allow-Origin: *`), parses it with the same strict PSID gate as a local file, and adds it to your tunes with its song length. Nothing is stored by the site or committed to this repository; the tunes remain the copyright of their composers and publishers, and HVSC distributes them for private enjoyment.
 
-The browsable index is generated, committed and pinned to one HVSC release by `scripts/build-hvsc-index.py`, which reads HVSC's own `Songlengths.md5`: a manifest, one JSON shard per second-level folder, a path list for search, and a starter shelf whose entries are verified against their PSID headers at build time. The transport shows elapsed time against the song length, and **Continue** plays on to the next tune in the collection when one ends (bundled studies loop, so they are treated as three minutes long). Each HVSC tune links out to DeepSID for a reference listen.
+The browsable index is generated, committed and pinned to one HVSC release by `scripts/build-hvsc-index.py`, which reads HVSC's own `Songlengths.md5`: a manifest, one JSON shard per second-level folder, a path list for search, and a starter shelf whose entries are verified against their PSID headers at build time. The transport shows elapsed time against the song length, and **Continue** plays on to the next tune in the collection when one ends. No music is bundled: the record box starts empty and fills from the shelf, the archive or your own files. Each HVSC tune links out to DeepSID for a reference listen.
 
 ### Multi-SID update (0.2.0)
 
 2SID and 3SID tunes (PSID v3/v4) now play. The parser reads the second and third chip addresses and per-chip model bits exactly as the HVSC specification describes: odd or reserved address bytes mean "no chip", and unknown model bits for chips 2 and 3 inherit chip 1. The adapted jsSID core drives up to three chips, nine voices and one filter per chip; upstream parsed per-chip models but applied the first chip's model everywhere, and the adapter patch corrects that. Each chip has its own model selector, seeded from the file.
 
-The inspector rebuilds per tune. Single-chip tunes keep the classic three-card row. Multi-chip tunes offer two layouts, switchable and remembered in the browser: **Compact** shows every chip as a row of condensed cards with fixed row heights, and **Tabs** shows one chip at a time at full size. The register view shows one block per chip. Phosphor mode nests extra chips as smaller rings inside the first chip's orbits; oscilloscope mode gives each chip its own band. A second bundled original, `Phosphor dreams 3SID`, is a three-chip canon with mixed 8580/6581/8580 models that exercises all nine cards offline.
+The inspector rebuilds per tune. Single-chip tunes keep the classic three-card row. Multi-chip tunes offer two layouts, switchable and remembered in the browser: **Compact** shows every chip as a row of condensed cards with fixed row heights, and **Tabs** shows one chip at a time at full size. The register view shows one block per chip. Phosphor mode nests extra chips as smaller rings inside the first chip's orbits; oscilloscope mode gives each chip its own band. An original three-chip canon, `Phosphor dreams 3SID`, with mixed 8580/6581/8580 models exercises all nine voices in the test suite.
 
 ### Collection and visualization update (0.1.2)
 
@@ -52,7 +52,7 @@ The script reads `HERE_NOW_API_KEY` from the environment or `.env` (never commit
 
 ## What works
 
-- Original bundled PSID tunes, `Phosphor dreams` and the three-chip `Phosphor dreams 3SID`, plus local file selection, drag-and-drop and removal of imported tracks. Removing the playing track stops it and selects the nearest remaining tune, paused. Removing another track preserves playback. Original files on disk are unchanged.
+- Local file selection, drag-and-drop and removal of imported tracks. Removing the playing track stops it and selects the nearest remaining tune, paused. Removing another track preserves playback. Original files on disk are unchanged.
 - PAL PSID playback for one, two or three SID chips, subtunes, pause/resume, restart and volume.
 - Hermit's jsSID 0.9.1 adapted to AudioWorklet, with 6581/8580 model selection per chip.
 - Emulator-derived pre-filter voice waveforms and internal envelope levels.
@@ -77,6 +77,7 @@ Envelope meters are internal emulator counters, not hardware-readable per-voice 
 ## Structure
 
 - `dist/index.html`, `style.css`, `app.js`: interface and main-thread audio controller.
+- `tests/music/`: the two original PSID studies used as test fixtures (not published).
 - `dist/sid-format.js`: PSID validation and metadata parsing, including v3/v4 chip addresses and models.
 - `dist/collection.js`: deterministic track-removal state transitions.
 - `dist/archive.js`: HVSC URL, shard, search, length and auto-advance helpers.
@@ -86,7 +87,7 @@ Envelope meters are internal emulator counters, not hardware-readable per-voice 
 - `dist/vendor/jssid.js`: unchanged upstream emulator.
 - `dist/vendor/sid-core.js`: generated AudioWorklet-friendly, instrumented emulator core.
 - `scripts/adapt-engine.py`: reproducible patch, including explicit-load-address handling in the wrapper, bounded CPU execution, ENV3 index correction, multi-chip loading and per-chip model application.
-- `scripts/make-demo.py`: original 6502 music routine and PSID generator for the single-chip and 3SID studies.
+- `scripts/make-demo.py`: original 6502 music routine and PSID generator for the single-chip and 3SID test fixtures under `tests/music/`.
 - `scripts/build-hvsc-index.py`: downloads HVSC's Songlengths database and emits the index under `dist/hvsc/`.
 - `scripts/publish-herenow.py`: publishes `dist/` to here.now.
 - `tests/player.test.js`: format validation, audio output, restart, mute/model and worklet-bridge tests.
@@ -108,7 +109,7 @@ Compare playback of familiar HVSC tunes against DeepSID and a reference emulator
 
 ## Credits
 
-Emulator: **Mihaly Horvath (Hermit), 2016**, jsSID 0.9.1, mirrored at https://github.com/og2t/jsSID. Original source blob: `552a05f94353160158a485852629b43107c41c96`. The author's licensing statement is preserved in `dist/vendor/README-jsSID.txt`; it allows use/modification under the author's “WTF license” statement. Original and adapted sources are distributed together. No third-party SID music is bundled.
+Emulator: **Mihaly Horvath (Hermit), 2016**, jsSID 0.9.1, mirrored at https://github.com/og2t/jsSID. Original source blob: `552a05f94353160158a485852629b43107c41c96`. The author's licensing statement is preserved in `dist/vendor/README-jsSID.txt`; it allows use/modification under the author's “WTF license” statement. Original and adapted sources are distributed together. No music is bundled with the site; the original studies live under `tests/music/` as fixtures.
 
 The visual interface, adapter, tests and included procedural composition were created for this project. A project-level license has not yet been chosen by the repository owner.
 

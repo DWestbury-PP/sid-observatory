@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {parseSID} from '../dist/sid-format.js';
 import {SIDCore} from '../dist/vendor/sid-core.js';
-const bytes=readFileSync(new URL('../dist/music/phosphor-dreams.sid',import.meta.url));
+const bytes=readFileSync(new URL('./music/phosphor-dreams.sid',import.meta.url));
 const buffer=()=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength);
 
 test('PSID metadata, explicit and embedded load addresses agree',()=>{

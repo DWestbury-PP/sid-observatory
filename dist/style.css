@@ -95,7 +95,7 @@ main{padding-bottom:24px}
 .track-item strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .remove-track{width:30px;height:34px;border:1px solid transparent;border-radius:4px;background:transparent;color:#a5b1c3;font-size:23px;line-height:1}
 .remove-track:hover,.remove-track:focus-visible{background:#352327;color:#ffbaab;border-color:#785047}
-@media(max-width:800px){.track-row{flex:0 0 215px;margin:0}.track-row .track-item{width:100%;min-width:0}}
+@media(max-width:800px){.track-row{flex:0 0 215px;margin:0}.track-row .track-item{width:100%;min-width:0}.track-list{max-height:none}.track-empty{display:none}}
 
 /* Multi-chip inspector. Chip groups stack (compact) or show one at a time (tabs). */
 .inspector-tools{display:flex;align-items:center;gap:14px;min-width:0}
@@ -143,7 +143,10 @@ main{padding-bottom:24px}
 @media(max-width:540px){.inspector-tools>span{display:none}#chips.condensed .voice-card{height:calc(12rem + 25px)}}
 
 /* The archive: starter shelf in the record box, a browsing dialog, and playback length. */
-.shelf{margin:14px -10px 12px}
+.shelf{margin:14px -10px 12px;max-height:min(34vh,300px);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#2c3648 transparent;padding-right:2px;mask-image:linear-gradient(#000 calc(100% - 22px),transparent)}
+.shelf:hover,.shelf:focus-within{mask-image:none}
+.track-list{max-height:min(38vh,360px);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#2c3648 transparent}
+.track-empty{font-size:12px;color:var(--muted);margin:6px 10px 10px}
 .shelf-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:5px;padding:9px 10px;align-items:center}
 .shelf-item:hover,.shelf-item:focus-visible{background:#131b26;border-color:#26303f}
 .shelf-item strong{display:block;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
