@@ -5,6 +5,8 @@ A browser SID listening room: demoscene phosphor meets a modern instrument panel
 Live demo: https://nutmeg-cairn-grwh.here.now/
 Source: https://github.com/DWestbury-PP/sid-observatory
 
+![The listening room: Rob Hubbard's Commando streaming from HVSC, phosphor orbits live, and the three voice cards below.](docs/images/main-screen.jpg)
+
 Third pressing, 0.3.0. Built with Darrell Westbury's C64/EVO64 brief in mind.
 
 ### Archive update (0.3.0)
@@ -13,11 +15,15 @@ The record box now opens onto the High Voltage SID Collection (HVSC). A starter 
 
 The browsable index is generated, committed and pinned to one HVSC release by `scripts/build-hvsc-index.py`, which reads HVSC's own `Songlengths.md5`: a manifest, one JSON shard per second-level folder, a path list for search, and a starter shelf whose entries are verified against their PSID headers at build time. The transport shows elapsed time against the song length, and **Continue** plays on to the next tune in the collection when one ends. No music is bundled: the record box starts empty and fills from the shelf, the archive or your own files. Each HVSC tune links out to DeepSID for a reference listen.
 
+![The archive dialog searching HVSC for 3sid: 29 matches across the collection, each with a play row and a queue button.](docs/images/hsvc-loader.jpg)
+
 ### Multi-SID update (0.2.0)
 
 2SID and 3SID tunes (PSID v3/v4) now play. The parser reads the second and third chip addresses and per-chip model bits exactly as the HVSC specification describes: odd or reserved address bytes mean "no chip", and unknown model bits for chips 2 and 3 inherit chip 1. The adapted jsSID core drives up to three chips, nine voices and one filter per chip; upstream parsed per-chip models but applied the first chip's model everywhere, and the adapter patch corrects that. Each chip has its own model selector, seeded from the file.
 
 The inspector rebuilds per tune. Single-chip tunes keep the classic three-card row. Multi-chip tunes offer two layouts, switchable and remembered in the browser: **Compact** shows every chip as a row of condensed cards with fixed row heights, and **Tabs** shows one chip at a time at full size. The register view shows one block per chip. Phosphor mode nests extra chips as smaller rings inside the first chip's orbits; oscilloscope mode gives each chip its own band. An original three-chip canon, `Phosphor dreams 3SID`, with mixed 8580/6581/8580 models exercises all nine voices in the test suite.
+
+![Compact inspector layout for a 3SID tune: three chip rows of condensed voice cards, each chip with its own filter strip and model selector.](docs/images/voice-cards.jpg)
 
 ### Collection and visualization update (0.1.2)
 
@@ -64,6 +70,8 @@ The script reads `HERE_NOW_API_KEY` from the environment or `.env` (never commit
 - HVSC starter shelf, folder browser and search; tunes streamed on demand with song lengths, elapsed/length display, stop-at-end and auto-advance.
 - Responsive layout, keyboard controls (Space toggles playback), accessible control labels.
 
+![Listening mode: the instrument panel hidden and the oscilloscope given the whole window, three triggered pre-filter traces.](docs/images/full-size-viz.jpg)
+
 Imported and streamed tunes remain in browser memory. No tune upload, persistent storage, analytics or backend. Google Fonts is the only external display resource and has local font fallbacks; archive tunes are fetched from hvsc.c64.org only when you choose them. Layout and auto-advance preferences are kept in `localStorage`. DeepSID, HVSC and emulator links are optional external navigation.
 
 ## Accuracy and compatibility boundaries
@@ -78,6 +86,7 @@ Envelope meters are internal emulator counters, not hardware-readable per-voice 
 
 - `dist/index.html`, `style.css`, `app.js`: interface and main-thread audio controller.
 - `tests/music/`: the two original PSID studies used as test fixtures (not published).
+- `docs/images/`: README screenshots.
 - `dist/sid-format.js`: PSID validation and metadata parsing, including v3/v4 chip addresses and models.
 - `dist/collection.js`: deterministic track-removal state transitions.
 - `dist/archive.js`: HVSC URL, shard, search, length and auto-advance helpers.
