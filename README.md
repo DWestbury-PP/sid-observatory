@@ -2,7 +2,7 @@
 
 A browser SID listening room: demoscene phosphor meets a modern instrument panel.
 
-Live demo: https://tender-coral-87w9.here.now/
+Live demo: https://nutmeg-cairn-grwh.here.now/
 Source: https://github.com/DWestbury-PP/sid-observatory
 
 Third pressing, 0.3.0. Built with Darrell Westbury's C64/EVO64 brief in mind.
