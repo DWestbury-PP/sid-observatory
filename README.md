@@ -2,12 +2,12 @@
 
 A browser SID listening room: demoscene phosphor meets a modern instrument panel.
 
-Live demo: https://nutmeg-cairn-grwh.here.now/
-Source: https://github.com/DWestbury-PP/sid-observatory
+## Live demo: https://nutmeg-cairn-grwh.here.now/
+
 
 ![The listening room: Rob Hubbard's Commando streaming from HVSC, phosphor orbits live, and the three voice cards below.](docs/images/main-screen.jpg)
 
-Third pressing, 0.3.0. Built with Darrell Westbury's C64/EVO64 brief in mind.
+
 
 ### Archive update (0.3.0)
 
