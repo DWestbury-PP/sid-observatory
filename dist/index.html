@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b12">
+  <meta name="description" content="A listening room for Commodore 64 music. Play SID files and watch the voices, envelopes and registers inside the chip.">
+  <title>SID Observatory</title>
+  <link rel="stylesheet" href="style.css?v=0.1.2">
+</head>
+<body>
+  <header class="masthead">
+    <a class="brand" href="./" aria-label="SID Observatory home"><span class="brand-symbol" aria-hidden="true">▥</span><span>SID<span class="brand-light">OBSERVATORY</span></span></a>
+    <div class="edition">COMMODORE 64 <span>/</span> SOUND INTERFACE DEVICE</div>
+    <button class="quiet" id="about-button">About this instrument <span aria-hidden="true">↗</span></button>
+  </header>
+  <div class="workspace">
+    <aside class="collection">
+      <div class="section-label">THE RECORD BOX <span id="track-count">01</span></div>
+      <h1>A little silicon.<br>A whole universe.</h1>
+      <p class="collection-intro">Pull up a chair. Listen inside the chip.</p>
+      <div class="collection-divider"></div>
+      <div class="section-label">YOUR TUNES</div>
+      <div id="track-list" class="track-list"></div>
+      <label class="import-button" for="sid-file"><span aria-hidden="true">＋</span> Open a SID file<input type="file" id="sid-file" accept=".sid" multiple></label>
+      <p class="file-note">Or drop one anywhere.<br>Your files stay in your browser.</p>
+      <div class="sleeve-note"><span class="tiny-label">ON THE TURNTABLE</span><p>Three oscillators.<br>One shared filter.<br>Quite a lot of attitude.</p><div class="spectrum-mark" aria-hidden="true"></div><span class="tiny-label">EST. 1982 · STILL RESONATING</span></div>
+      <a class="archive-link" href="https://deepsid.chordian.net/" target="_blank" rel="noopener">Explore the archive at DeepSID ↗</a>
+    </aside>
+    <main>
+      <div class="main-topline"><span class="section-label">THE LISTENING ROOM <span class="prototype">FIRST PRESSING / 0.1.2</span></span><button class="quiet" id="focus-button" aria-pressed="false">Listening mode <span aria-hidden="true">⤢</span></button></div>
+      <section class="track-heading" aria-label="Current tune">
+        <div><div class="eyebrow" id="track-credit">AN ORIGINAL SID STUDY</div><h2 id="track-title">Phosphor dreams</h2><p id="track-author">SID Observatory <span>•</span> 2026</p></div>
+        <div class="track-badges"><span id="format-badge">PSID v2</span><span>PAL</span><span>3 VOICES</span></div>
+      </section>
+      <section class="visualizer" aria-label="Live SID visualization">
+        <div class="visualizer-toolbar"><div class="live-label"><span id="live-indicator"></span><span id="live-text">READY TO LISTEN</span></div><div class="view-switch" role="group" aria-label="Visualization"><button class="selected" data-view="ribbons" aria-pressed="true">Phosphor</button><button data-view="scope" aria-pressed="false">Oscilloscope</button><button data-view="registers" aria-pressed="false">Registers</button></div></div>
+        <canvas id="main-canvas" aria-label="Audio-driven phosphor orbits with voice history"></canvas>
+        <div id="register-panel" hidden></div>
+        <div class="visualizer-footer"><div class="voice-legend"><span class="c1">01 PULSE</span><span class="c2">02 TRIANGLE</span><span class="c3">03 NOISE</span></div><span id="visual-caption">PHOSPHOR ORBITS · VOICE HISTORY</span></div>
+        <div id="start-hint"><span>Make a little noise.</span><button id="start-button">▶ &nbsp; Play the first tune</button></div>
+      </section>
+      <div class="inspector-heading"><h3>Inside the silicon</h3><span>LIVE VOICE STATE <span class="separator">/</span> <span id="clock-label">985,248 Hz</span></span></div>
+      <section id="voices" class="voices" aria-label="SID voice inspector"></section>
+      <section class="filter-strip" aria-label="Shared SID filter">
+        <div><span class="tiny-label">SHARED ANALOG FILTER</span><strong id="filter-mode">Low-pass</strong></div>
+        <div class="cutoff-block"><div><span class="tiny-label">CUTOFF REGISTER</span><strong id="filter-cutoff">0000 <small>/ 2047</small></strong></div><div class="filter-track"><span id="cutoff-fill"></span></div></div>
+        <div><span class="tiny-label">RESONANCE</span><strong id="filter-resonance">0 <small>/ 15</small></strong></div>
+        <div><span class="tiny-label">ROUTING</span><strong id="filter-routing">—</strong></div>
+        <label class="model-control"><span class="tiny-label">CHIP MODEL</span><select id="model"><option value="8580">MOS 8580</option><option value="6581">MOS 6581</option></select></label>
+      </section>
+      <p class="status-line" id="status" role="status">Ready. An original test tune is included; open a PAL, single-SID PSID file to hear your own collection.</p>
+    </main>
+  </div>
+  <footer class="transport" aria-label="Playback controls">
+    <div class="transport-track"><div class="mini-disc" aria-hidden="true"><span></span></div><div><strong id="transport-title">Phosphor dreams</strong><span id="transport-author">SID Observatory</span></div></div>
+    <div class="transport-controls"><button class="icon-button" id="restart" aria-label="Restart tune" title="Restart tune">↺</button><button id="play" class="play-button" aria-label="Play" title="Play / pause (Space)">▶</button><div class="time"><strong id="elapsed">00:00</strong><span>ELAPSED</span></div><label class="subtune-label">SUBTUNE<select id="subtune"><option value="0">01 / 01</option></select></label></div>
+    <label class="volume-label"><span>VOLUME</span><input id="volume" type="range" min="0" max="100" value="65" aria-label="Volume"><output id="volume-value">65%</output></label>
+  </footer>
+  <dialog id="about"><button class="quiet close" id="close-about" aria-label="Close about">✕</button><div class="eyebrow">SID OBSERVATORY / FIRST PRESSING</div><h2>Listen closer.</h2><p>A demoscene listening room with a view into the Commodore 64’s Sound Interface Device.</p><p>This prototype uses Hermit’s jsSID 0.9.1, adapted to an AudioWorklet. Voice traces and envelope levels come from the emulator; register values are sampled for display. Phosphor mode maps those samples to glowing radial orbits with a short history of fading traces. Oscilloscope mode shows triggered, flat waveforms. Reduced-motion mode keeps the radial geometry but removes orbit rotation and history trails.</p><p>Supported here: PAL, single-chip PSID music with a callable play routine, subtunes, 6581/8580 emulation and voice mute/solo. RSID, NTSC, multi-SID and ROM-dependent tunes are not supported in this first version. This lightweight engine is not a cycle-exact reference player.</p><p>ADSR readouts are raw 4-bit register values. The envelope meter is the emulator’s internal envelope level; the SID only exposes ENV3 directly on real hardware. Cutoff is shown as an 11-bit register value, not a measured frequency.</p><p>The included tune, <em>Phosphor dreams</em>, is an original procedural SID study created for this prototype. Imported music is not uploaded or stored after you close the page.</p><p><a href="https://github.com/og2t/jsSID" target="_blank" rel="noopener">Emulator source ↗</a> · <a href="https://deepsid.chordian.net/" target="_blank" rel="noopener">DeepSID ↗</a></p></dialog>
+  <script type="module" src="app.js?v=0.1.2"></script>
+</body>
+</html>

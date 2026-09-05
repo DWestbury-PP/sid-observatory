@@ -1,0 +1,44 @@
+"""Reproducible AudioWorklet/instrumentation patch of Hermit's jsSID 0.9.1.
+Upstream source remains unchanged under dist/vendor/jssid.js.
+"""
+from pathlib import Path
+root = Path(__file__).resolve().parents[1]
+source = (root/'dist/vendor/jssid.js').read_text()
+start = source.index('var CLK=')
+body = source[start:]
+# Declare upstream implicit globals so the core can run as a strict ES module.
+body = body.replace('endcallback=null,playtime=0,ended=0;', 'var endcallback=null,playtime=0,ended=0;')
+# Source has an ENV3 indexing typo; third voice is index 2 for chip zero.
+body = body.replace('M[SIDaddr+0x1C]=envcnt[3]', 'M[SIDaddr+0x1C]=envcnt[num*3+2]')
+body = body.replace('if(M[SIDaddr+0x17]&FSW[chn])flin+=', 'voiceSample[chn]=(wfout-0x8000)*(envcnt[chn]/256)/32768;if(muted[chn])continue;if(M[SIDaddr+0x17]&FSW[chn])flin+=')
+# Enforce bounded init and per-play execution for malformed program code.
+body = body.replace('if(tmod[subtune]||M[0xDC05])', 'if(tout<0)throw new Error("SID init routine exceeded the instruction budget.");if(tmod[subtune]||M[0xDC05])')
+body = body.replace('fcnt=fspd;fin=0;PC=pla;', 'fcnt=fspd;fin=0;frameInstructions=0;PC=pla;')
+body = body.replace('pPC=PC;if(CPU()', 'if(++frameInstructions>100000)throw new Error("SID play routine exceeded the instruction budget.");pPC=PC;if(CPU()')
+body = body.replace('M[1]=0x37;M[0xDC05]=0;', 'M[1]=0x37;M[0x02A6]=1;M[0xDC05]=0;')
+api = '''
+// Adapted by SID Observatory, 2026. Audio scheduling is owned by AudioWorklet.
+export function SIDCore(smpr=48000) {
+  const bgnoi=0;
+  var trsaw,pusaw,Pulsetrsaw;
+  let frameInstructions=0;
+  const muted=[false,false,false], voiceSample=new Float32Array(3);
+  this.render=()=>play();
+  this.samples=voiceSample;
+  this.setMuted=values=>{for(let i=0;i<3;i++)muted[i]=!!values[i];};
+  this.setModel=value=>{SIDm=value===6581?6581:8580;};
+  this.snapshot=()=>({registers:Array.from(M.slice(0xD400,0xD419)),envelopes:envcnt.slice(0,3),time:playtime});
+  this.load=(buffer,meta,sub=meta.start)=>{
+    const bytes=new Uint8Array(buffer);
+    ldd=0; ind=0; M.fill(0); initSID();
+    M.set(bytes.subarray(meta.offset),meta.load);
+    ina=meta.init; pla=plf=meta.play; SIDamount=1; SID_address[1]=SID_address[2]=0;
+    for(let i=0;i<32;i++)tmod[i]=(meta.speed>>>i)&1;
+    // Tunes 33+ inherit speed bit 31.
+    if(sub>=32)tmod[sub]=tmod[31];
+    pacc.fill(0);pracc.fill(0);nLFSR.fill(0x7FFFF8);prevwfout.fill(0);pwv.fill(0);plp.fill(0);pbp.fill(0);sMSB.fill(0);sMSBrise.fill(0);
+    SIDm=meta.model; ldd=1; init(sub);
+  };
+'''
+(root/'dist/vendor/sid-core.js').write_text(api+body)
+print('Adapted SID core generated.')
