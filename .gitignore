@@ -3,3 +3,4 @@ node_modules/
 *.wav
 .herenow-state.json
 credentials
+.env

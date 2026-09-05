@@ -5,7 +5,13 @@ A browser SID listening room: demoscene phosphor meets a modern instrument panel
 Live demo: https://tender-coral-87w9.here.now/
 Source: https://github.com/DWestbury-PP/sid-observatory
 
-First pressing, 0.1.2. Built with Darrell Westbury's C64/EVO64 brief in mind.
+Second pressing, 0.2.0. Built with Darrell Westbury's C64/EVO64 brief in mind.
+
+### Multi-SID update (0.2.0)
+
+2SID and 3SID tunes (PSID v3/v4) now play. The parser reads the second and third chip addresses and per-chip model bits exactly as the HVSC specification describes: odd or reserved address bytes mean "no chip", and unknown model bits for chips 2 and 3 inherit chip 1. The adapted jsSID core drives up to three chips, nine voices and one filter per chip; upstream parsed per-chip models but applied the first chip's model everywhere, and the adapter patch corrects that. Each chip has its own model selector, seeded from the file.
+
+The inspector rebuilds per tune. Single-chip tunes keep the classic three-card row. Multi-chip tunes offer two layouts, switchable and remembered in the browser: **Compact** shows every chip as a row of condensed cards with fixed row heights, and **Tabs** shows one chip at a time at full size. The register view shows one block per chip. Phosphor mode nests extra chips as smaller rings inside the first chip's orbits; oscilloscope mode gives each chip its own band. A second bundled original, `Phosphor dreams 3SID`, is a three-chip canon with mixed 8580/6581/8580 models that exercises all nine cards offline.
 
 ### Collection and visualization update (0.1.2)
 
@@ -29,15 +35,23 @@ npm test
 
 Serve over HTTPS in production: AudioWorklet requires a secure context. Publish the contents of `dist/` to here.now or another static host. Opening index.html as a file will not work.
 
+```sh
+python3 scripts/publish-herenow.py          # new preview Site on a fresh slug
+python3 scripts/publish-herenow.py <slug>   # update the live Site in place
+```
+
+The script reads `HERE_NOW_API_KEY` from the environment or `.env` (never committed).
+
 ## What works
 
-- Original bundled PSID tune, `Phosphor dreams`, plus local file selection, drag-and-drop and removal of imported tracks. Removing the playing track stops it and selects the nearest remaining tune, paused. Removing another track preserves playback. Original files on disk are unchanged.
-- PAL single-SID PSID playback, subtunes, pause/resume, restart and volume.
-- Hermit's jsSID 0.9.1 adapted to AudioWorklet, with 6581/8580 model selection.
+- Original bundled PSID tunes, `Phosphor dreams` and the three-chip `Phosphor dreams 3SID`, plus local file selection, drag-and-drop and removal of imported tracks. Removing the playing track stops it and selects the nearest remaining tune, paused. Removing another track preserves playback. Original files on disk are unchanged.
+- PAL PSID playback for one, two or three SID chips, subtunes, pause/resume, restart and volume.
+- Hermit's jsSID 0.9.1 adapted to AudioWorklet, with 6581/8580 model selection per chip.
 - Emulator-derived pre-filter voice waveforms and internal envelope levels.
 - Frequency, nearest equal-tempered note (A4=440), raw pulse-width register / 4096, ADSR nibbles, gate/sync/ring/test flags.
 - Mute and solo at the mixer/filter input; oscillator and envelope emulation continue.
-- Shared filter mode, cutoff register, resonance, routing and $D400–$D418 hex view.
+- Per-chip filter mode, cutoff register, resonance, routing and hex register view.
+- Compact and tabbed inspector layouts for multi-chip tunes; mute and solo across up to nine voices.
 - Phosphor visualization, oscilloscope mode, listening mode and reduced-motion support.
 - Responsive layout, keyboard controls (Space toggles playback), accessible control labels.
 
@@ -45,7 +59,7 @@ Imported tunes remain in browser memory. No tune upload, persistent storage, ana
 
 ## Accuracy and compatibility boundaries
 
-This is an instrumented prototype, not a cycle-exact reference player. It intentionally rejects RSID, NTSC-only tunes, MUS/PlaySID-specific files, multiple SIDs and interrupt-vector playback (zero play address). ROM-dependent tunes, digis and unusual interrupt timing are not supported by this engine and may fail or sound wrong. PAL is assumed if a file does not specify a clock. See the upstream README for its limitations.
+This is an instrumented prototype, not a cycle-exact reference player. It intentionally rejects RSID, NTSC-only tunes, MUS/PlaySID-specific files and interrupt-vector playback (zero play address). Multi-SID fidelity depends on jsSID's lightweight chip model and has not been compared against a reference emulator. ROM-dependent tunes, digis and unusual interrupt timing are not supported by this engine and may fail or sound wrong. PAL is assumed if a file does not specify a clock. See the upstream README for its limitations.
 
 The 50 Hz inspector samples emulated state; it is not a complete history of all SID writes and can miss changes between snapshots. Visual state may lead audible output by device buffering latency. Voice waveforms contain oscillator output multiplied by the emulated envelope before routing through the shared filter. Phosphor mode maps the samples radially into three glowing orbits with short waveform-history trails and slow rotation driven by playback time. Oscilloscope mode shows triggered, flat time-domain traces. Reduced-motion mode removes orbit rotation and history trails while retaining the distinct radial geometry.
 
@@ -54,15 +68,16 @@ Envelope meters are internal emulator counters, not hardware-readable per-voice 
 ## Structure
 
 - `dist/index.html`, `style.css`, `app.js`: interface and main-thread audio controller.
-- `dist/sid-format.js`: PSID validation and metadata parsing.
+- `dist/sid-format.js`: PSID validation and metadata parsing, including v3/v4 chip addresses and models.
 - `dist/collection.js`: deterministic track-removal state transitions.
 - `dist/visualizations.js`: separate oscilloscope and phosphor renderers.
 - `dist/sid-worklet.js`: realtime render and instrument snapshot bridge.
 - `dist/vendor/jssid.js`: unchanged upstream emulator.
 - `dist/vendor/sid-core.js`: generated AudioWorklet-friendly, instrumented emulator core.
-- `scripts/adapt-engine.py`: reproducible patch, including explicit-load-address handling in the wrapper, bounded CPU execution and ENV3 index correction.
-- `scripts/make-demo.py`: original 6502 music routine and PSID generator.
+- `scripts/adapt-engine.py`: reproducible patch, including explicit-load-address handling in the wrapper, bounded CPU execution, ENV3 index correction, multi-chip loading and per-chip model application.
+- `scripts/make-demo.py`: original 6502 music routine and PSID generator for the single-chip and 3SID studies.
 - `tests/player.test.js`: format validation, audio output, restart, mute/model and worklet-bridge tests.
+- `tests/multisid.test.js`: chip-address rules, nine-voice rendering, per-chip mute/model and the nine-trace worklet bridge.
 
 To regenerate the derived files:
 
@@ -74,7 +89,7 @@ npm test
 
 ## Next iteration
 
-Establish a reference corpus of familiar tunes and compare playback against a reference emulator; evaluate reSID/WebSID fidelity, 2SID/3SID support and complete register-write capture. Add authorized archive access, song lengths and a proper collection experience after validating that foundation. A user-picked familiar SID is a better listening acceptance test than the bundled diagnostic composition.
+Establish a reference corpus of familiar tunes and compare playback against a reference emulator; evaluate reSID/WebSID fidelity and complete register-write capture. Add authorized archive access, song lengths and a proper collection experience after validating that foundation. A user-picked familiar SID is a better listening acceptance test than the bundled diagnostic composition.
 
 ## Credits
 

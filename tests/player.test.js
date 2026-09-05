@@ -15,13 +15,15 @@ test('PSID metadata, explicit and embedded load addresses agree',()=>{
   for(let i=0;i<10000;i++)assert.equal(a.render(),b.render());
 });
 test('unsupported and malformed formats fail before emulation',()=>{
-  for(const mutate of [b=>b[0]=82,b=>b[119]=0x28,b=>{b[5]=3;b[122]=0x42;},b=>{b[14]=b[15]=0;},b=>{b[6]=255;},b=>{b[12]=b[13]=0;}]){const a=buffer();mutate(new Uint8Array(a));assert.throws(()=>parseSID(a));}
+  for(const mutate of [b=>b[0]=82,b=>b[119]=0x28,b=>{b[14]=b[15]=0;},b=>{b[6]=255;},b=>{b[12]=b[13]=0;}]){const a=buffer();mutate(new Uint8Array(a));assert.throws(()=>parseSID(a));}
+  // A v3 header with a second chip is now valid rather than rejected.
+  const twin=buffer();const t=new Uint8Array(twin);t[5]=3;t[122]=0x42;assert.equal(parseSID(twin).chips.length,2);
   assert.throws(()=>parseSID(new ArrayBuffer(10)));
 });
 test('three real voices produce finite output at browser sample rates; restart is deterministic',()=>{
   for(const rate of [44100,48000]){
     const core=new SIDCore(rate),a=buffer();core.load(a,parseSID(a));let energy=0,peak=0;const voiceEnergy=[0,0,0],initial=[];
-    for(let i=0;i<rate*2;i++){const sample=core.render();assert.ok(Number.isFinite(sample));if(i<1000)initial.push(sample);energy+=sample*sample;peak=Math.max(peak,Math.abs(sample));core.samples.forEach((x,v)=>voiceEnergy[v]+=x*x);}
+    for(let i=0;i<rate*2;i++){const sample=core.render();assert.ok(Number.isFinite(sample));if(i<1000)initial.push(sample);energy+=sample*sample;peak=Math.max(peak,Math.abs(sample));core.samples.slice(0,3).forEach((x,v)=>voiceEnergy[v]+=x*x);}
     assert.ok(energy>100&&peak<1);assert.ok(voiceEnergy.every(e=>e>10));assert.ok(Math.abs(core.snapshot().time-2)<.001);
     core.load(a,parseSID(a));for(let i=0;i<initial.length;i++)assert.equal(core.render(),initial[i]);
   }
