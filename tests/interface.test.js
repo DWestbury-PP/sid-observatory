@@ -40,3 +40,17 @@ test('Phosphor renders actual signal history; pause time keeps orbit geometry st
   drawPhosphor(again,1000,324,snapshot,history,[false,false,false]);
   assert.ok(first.paths.length>3);assert.deepEqual(first.paths,again.paths);
 });
+
+const nine={time:4,chips:3,waves:Array.from({length:9},(_,v)=>Float32Array.from({length:512},(_,i)=>Math.sin(i*.03*(v+1))*.6))};
+test('nine-voice snapshots draw one closed orbit and one open trace per voice',()=>{
+  for(const [w,h] of [[360,220],[1200,390]]){
+    const scope=recordingContext(),phosphor=recordingContext(),mutedNone=Array(9).fill(false);
+    drawOscilloscope(scope,w,h,nine,mutedNone);drawPhosphor(phosphor,w,h,nine,[],mutedNone,true);
+    assert.equal(scope.paths.filter(path=>path.length>2).length,9);assert.equal(phosphor.paths.length,9);
+    assert.ok(phosphor.paths.every(path=>path.closed)&&scope.paths.every(path=>!path.closed));
+    for(const path of [...scope.paths,...phosphor.paths])for(const point of path)assert.ok(point.every(Number.isFinite));
+    // Inner chips draw smaller rings than chip 1 around the same centers.
+    const extent=path=>Math.max(...path.map(p=>p[0]))-Math.min(...path.map(p=>p[0]));
+    assert.ok(extent(phosphor.paths[0])>extent(phosphor.paths[3])&&extent(phosphor.paths[3])>extent(phosphor.paths[6]));
+  }
+});
