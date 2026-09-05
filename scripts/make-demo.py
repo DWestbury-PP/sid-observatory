@@ -1,4 +1,4 @@
-"""Assemble small original three-voice PSID studies with no external music assets.
+"""Assemble small original three-voice PSID studies used as test fixtures (no external music assets).
 
 Two files are produced: the single-chip study `phosphor-dreams.sid` (PSID v2) and a
 three-chip canon `phosphor-dreams-3sid.sid` (PSID v4, chips at $D400/$D420/$D440
@@ -71,13 +71,13 @@ def header(version,init,play,flags,title,released,extra=b''):
     h[122:122+len(extra)]=extra
     return h
 
-(root/'dist/music').mkdir(exist_ok=True)
+(root/'tests/music').mkdir(exist_ok=True)
 
 # Single-chip study: identical routine to the first pressing.
 asm=Assembler(); voice_routine(asm,'',0xD400,0xFB)
 code=asm.resolve()
 single=header(2,asm.labels['init'],asm.labels['play'],0x24,'Phosphor dreams','2026 - original procedural study')+code
-(root/'dist/music/phosphor-dreams.sid').write_bytes(single)
+(root/'tests/music/phosphor-dreams.sid').write_bytes(single)
 print('Original PSID generated:',len(single),'bytes; play at',hex(asm.labels['play']))
 
 # Three-chip canon: chip 2 answers a fifth up on a sawtooth one bar later,
@@ -91,5 +91,5 @@ voice_routine(asm,'c',0xD440,0xFD,transpose=-12,lead_wave=0x11,drums=False,start
 code=asm.resolve()
 # Flags: PAL, SID1 8580, SID2 6581, SID3 8580. Extra SIDs at $D420 and $D440.
 triple=header(4,asm.labels['init'],asm.labels['play'],0x04|0x20|0x40|0x200,'Phosphor dreams 3SID','2026 - original 3SID canon',bytes([0x42,0x44]))+code
-(root/'dist/music/phosphor-dreams-3sid.sid').write_bytes(triple)
+(root/'tests/music/phosphor-dreams-3sid.sid').write_bytes(triple)
 print('Original 3SID PSID generated:',len(triple),'bytes; play at',hex(asm.labels['play']))

@@ -1,0 +1,297 @@
+[
+ {
+  "path": "/MUSICIANS/H/Hubbard_Rob/Commando.sid",
+  "title": "Commando",
+  "author": "Rob Hubbard",
+  "released": "1985 Elite",
+  "chips": 1,
+  "songs": 19,
+  "start": 0,
+  "lengths": [
+   235.6,
+   61.3,
+   6.0,
+   1.1,
+   0.6,
+   1.0,
+   4.4,
+   1.9,
+   3.5,
+   5.6,
+   3.5,
+   1.9,
+   2.9,
+   0.8,
+   1.1,
+   2.7,
+   2.3,
+   1.5,
+   0.8
+  ],
+  "note": "The arcade conversion that made the SID famous."
+ },
+ {
+  "path": "/MUSICIANS/H/Hubbard_Rob/Monty_on_the_Run.sid",
+  "title": "Monty on the Run",
+  "author": "Rob Hubbard",
+  "released": "1985 Gremlin Graphics",
+  "chips": 1,
+  "songs": 19,
+  "start": 0,
+  "lengths": [
+   350.0,
+   12.0,
+   164.0,
+   1.0,
+   2.0,
+   1.0,
+   4.0,
+   2.0,
+   2.0,
+   10.0,
+   1.0,
+   1.0,
+   2.0,
+   1.0,
+   1.0,
+   2.0,
+   1.0,
+   1.0,
+   1.0
+  ],
+  "note": "Six minutes of relentless invention."
+ },
+ {
+  "path": "/MUSICIANS/G/Galway_Martin/Wizball.sid",
+  "title": "Wizball",
+  "author": "Martin Galway",
+  "released": "1987 Ocean",
+  "chips": 1,
+  "songs": 9,
+  "start": 3,
+  "lengths": [
+   5.2,
+   99.6,
+   2.1,
+   214.9,
+   180.7,
+   5.7,
+   135.4,
+   5.8,
+   66.5
+  ],
+  "note": "Filter sweeps and a legendary melody."
+ },
+ {
+  "path": "/MUSICIANS/T/Tel_Jeroen/Cybernoid.sid",
+  "title": "Cybernoid",
+  "author": "Jeroen Tel",
+  "released": "1988 Hewson",
+  "chips": 1,
+  "songs": 2,
+  "start": 0,
+  "lengths": [
+   400.0,
+   12.0
+  ],
+  "note": "Maniacs of Noise at full tilt."
+ },
+ {
+  "path": "/MUSICIANS/D/Daglish_Ben/Last_Ninja.sid",
+  "title": "The Last Ninja",
+  "author": "Ben Daglish & Anthony Lees",
+  "released": "1987 System 3",
+  "chips": 1,
+  "songs": 11,
+  "start": 2,
+  "lengths": [
+   292.0,
+   276.0,
+   261.0,
+   246.0,
+   276.0,
+   238.0,
+   239.0,
+   259.0,
+   330.0,
+   250.0,
+   220.0
+  ],
+  "note": "Atmosphere in three voices."
+ },
+ {
+  "path": "/MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid",
+  "title": "Last Ninja 2",
+  "author": "Matt Gray",
+  "released": "1988 System 3",
+  "chips": 1,
+  "songs": 13,
+  "start": 0,
+  "lengths": [
+   267.0,
+   338.0,
+   303.0,
+   332.0,
+   237.0,
+   368.0,
+   226.0,
+   304.0,
+   228.0,
+   276.0,
+   126.0,
+   473.0,
+   211.0
+  ],
+  "note": "Central Park never sounded like this."
+ },
+ {
+  "path": "/MUSICIANS/H/Huelsbeck_Chris/R-Type.sid",
+  "title": "R-Type",
+  "author": "Chris Hülsbeck & Ramiro Vaca",
+  "released": "1988 Activision",
+  "chips": 1,
+  "songs": 14,
+  "start": 0,
+  "lengths": [
+   131.0,
+   36.0,
+   26.0,
+   54.0,
+   36.0,
+   62.0,
+   31.0,
+   20.0,
+   41.0,
+   31.0,
+   36.0,
+   19.0,
+   6.0,
+   8.0
+  ],
+  "note": "Huelsbeck on the C64."
+ },
+ {
+  "path": "/MUSICIANS/W/Whittaker_David/Lazy_Jones.sid",
+  "title": "Lazy Jones",
+  "author": "David Whittaker",
+  "released": "1984 Terminal Software",
+  "chips": 1,
+  "songs": 21,
+  "start": 0,
+  "lengths": [
+   12.8,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4,
+   6.4
+  ],
+  "note": "The loop that became a club hit."
+ },
+ {
+  "path": "/MUSICIANS/G/Galway_Martin/Comic_Bakery.sid",
+  "title": "Comic Bakery",
+  "author": "Martin Galway",
+  "released": "1986 Imagine",
+  "chips": 1,
+  "songs": 14,
+  "start": 0,
+  "lengths": [
+   189.0,
+   34.0,
+   50.0,
+   3.0,
+   3.0,
+   12.0,
+   1.0,
+   1.0,
+   2.0,
+   8.0,
+   1.0,
+   1.0,
+   3.0,
+   1.0
+  ],
+  "note": "Bright, bouncy, unmistakably Galway."
+ },
+ {
+  "path": "/MUSICIANS/L/Laxity/Syncopated.sid",
+  "title": "Syncopated",
+  "author": "Thomas E. Petersen (Laxity)",
+  "released": "1991 Vibrants",
+  "chips": 1,
+  "songs": 1,
+  "start": 0,
+  "lengths": [
+   142.0
+  ],
+  "note": "Demoscene groove from Vibrants."
+ },
+ {
+  "path": "/MUSICIANS/J/Jammer/BBC_2SID.sid",
+  "title": "BBC",
+  "author": "Kamil Wolnikowski (Jammer)",
+  "released": "2021 C64 Vinyl Tribute",
+  "chips": 2,
+  "songs": 1,
+  "start": 0,
+  "lengths": [
+   237.8
+  ],
+  "note": "Two chips, six voices."
+ },
+ {
+  "path": "/MUSICIANS/S/Stinsen/Space_Monkeys_2SID.sid",
+  "title": "Space Monkeys",
+  "author": "Johan Samuelson (Stinsen)",
+  "released": "2019 Genesis Project",
+  "chips": 2,
+  "songs": 1,
+  "start": 0,
+  "lengths": [
+   163.4
+  ],
+  "note": "A modern 2SID workout."
+ },
+ {
+  "path": "/MUSICIANS/C/Chiummo_Gaetano/Arcade_Memories_3SID.sid",
+  "title": "Arcade Memories",
+  "author": "Gaetano Chiummo",
+  "released": "2014 Samar Productions",
+  "chips": 3,
+  "songs": 1,
+  "start": 0,
+  "lengths": [
+   160.0
+  ],
+  "note": "Three chips, nine voices, one arcade."
+ },
+ {
+  "path": "/MUSICIANS/C/Chiummo_Gaetano/Hope_3SID.sid",
+  "title": "Hope",
+  "author": "Gaetano Chiummo",
+  "released": "2016 Samar Productions",
+  "chips": 3,
+  "songs": 1,
+  "start": 0,
+  "lengths": [
+   145.0
+  ],
+  "note": "Nine voices of quiet optimism."
+ }
+]

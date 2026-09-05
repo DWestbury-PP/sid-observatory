@@ -1,0 +1,53 @@
+{
+ "release": 85,
+ "generated": "2026-09-05",
+ "files": 61157,
+ "base": "https://hvsc.c64.org/download/C64Music",
+ "shards": {
+  "DEMOS": [
+   "0-9",
+   "A-F",
+   "Commodore",
+   "G-L",
+   "M-R",
+   "S-Z",
+   "UNKNOWN"
+  ],
+  "GAMES": [
+   "0-9",
+   "A-F",
+   "G-L",
+   "M-R",
+   "S-Z"
+  ],
+  "MUSICIANS": [
+   "0-9",
+   "A",
+   "B",
+   "C",
+   "D",
+   "E",
+   "F",
+   "G",
+   "H",
+   "I",
+   "J",
+   "K",
+   "L",
+   "M",
+   "N",
+   "O",
+   "P",
+   "Q",
+   "R",
+   "S",
+   "T",
+   "U",
+   "V",
+   "W",
+   "X",
+   "Y",
+   "Z"
+  ]
+ }
+}
