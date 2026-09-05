@@ -285,8 +285,8 @@ function archiveRow({glyph,title,subtitle,length,onOpen,onAdd,folder=false}){
   return row;
 }
 function fileRow(path,lengths){
-  const {title,composer}=describePath(path),name=path.split('/').pop(),chipsIn=/_3SID\.sid$/i.test(name)?3:/_2SID\.sid$/i.test(name)?2:1;
-  return archiveRow({glyph:'♪',title:title+(chipsIn>1?' · '+chipsIn+'SID':''),subtitle:composer+(lengths&&lengths.length>1?' · '+lengths.length+' subtunes':''),length:formatTime(lengths?.[0]),onOpen:()=>addArchiveTrack(path),onAdd:()=>addArchiveTrack(path,{play:false})});
+  const {title,composer,chips:chipsIn}=describePath(path);
+  return archiveRow({glyph:'♪',title:title+(chipsIn>1?' · '+chipsIn+'SID':''),subtitle:composer+(lengths&&lengths.length>1?' · '+lengths.length+' subtunes':''),length:lengths?formatTime(lengths[0]):'',onOpen:()=>addArchiveTrack(path),onAdd:()=>addArchiveTrack(path,{play:false})});
 }
 function renderCrumbs(){
   const crumbs=$('archive-crumbs');crumbs.replaceChildren();

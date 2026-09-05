@@ -45,8 +45,9 @@ test('URLs, names, times and search behave',()=>{
   assert.deepEqual(searchPaths(paths,'hubbard commando'),['/MUSICIANS/H/Hubbard_Rob/Commando.sid']);
   assert.deepEqual(searchPaths(paths,'COMMANDO'),['/MUSICIANS/H/Hubbard_Rob/Commando.sid','/GAMES/A-F/Commando_Remix.sid']);
   assert.deepEqual(searchPaths(paths,'   '),[]);assert.equal(searchPaths(paths,'commando',1).length,1);
-  assert.deepEqual(describePath('/MUSICIANS/H/Hubbard_Rob/Commando.sid'),{title:'Commando',composer:'Hubbard Rob',folder:'MUSICIANS/H/Hubbard_Rob'});
-  assert.equal(describePath('/DEMOS/A-F/Devils_ReSIDence_3SID.sid').composer,'DEMOS');
+  assert.deepEqual(describePath('/MUSICIANS/H/Hubbard_Rob/Commando.sid'),{title:'Commando',composer:'Hubbard Rob',folder:'MUSICIANS/H/Hubbard_Rob',chips:1});
+  assert.deepEqual(describePath('/DEMOS/A-F/Devils_ReSIDence_3SID.sid'),{title:'Devils ReSIDence',composer:'DEMOS',folder:'DEMOS/A-F',chips:3});
+  assert.equal(describePath('/MUSICIANS/J/Jammer/BBC_2SID.sid').chips,2);
 });
 test('end detection and advancing follow song lengths and collection order',()=>{
   assert.equal(hasEnded(10,0),false);assert.equal(hasEnded(235.5,235.6),false);assert.equal(hasEnded(235.6,235.6),true);assert.equal(hasEnded(5,null),false);

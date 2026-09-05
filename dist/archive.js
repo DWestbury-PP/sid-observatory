@@ -20,5 +20,6 @@ export function lengthsIn(tree,segments){const node=nodeAt(tree,segments.slice(0
 // A tune has ended when the song-length database knows its length and playback has reached it.
 export const hasEnded=(time,length)=>length>0&&time>=length;
 export const nextTrack=(tracks,current)=>current>=0&&current+1<tracks.length?current+1:-1;
-// Split "/MUSICIANS/H/Hubbard_Rob/Commando.sid" into a display composer and title.
-export function describePath(path){const parts=path.split('/').filter(Boolean);const file=parts.at(-1)||'';const folder=parts.length>3?parts[parts.length-2]:parts[0];return {title:humanize(file),composer:humanize(folder),folder:parts.slice(0,-1).join('/')};}
+// Split "/MUSICIANS/H/Hubbard_Rob/Commando.sid" into a display composer and title; a _2SID/_3SID
+// filename suffix becomes the chip count rather than part of the title.
+export function describePath(path){const parts=path.split('/').filter(Boolean);const file=parts.at(-1)||'';const folder=parts.length>3?parts[parts.length-2]:parts[0];const chips=/_3SID\.sid$/i.test(file)?3:/_2SID\.sid$/i.test(file)?2:1;return {title:humanize(file).replace(/\s[23]SID$/i,''),composer:humanize(folder),folder:parts.slice(0,-1).join('/'),chips};}
